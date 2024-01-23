@@ -38,16 +38,20 @@ def convert_currency(val):
         return float(new_val)
     else:
         return val
+
+
 # функция преобразования входных df' ом
 def df_convert_currency(df_list):   
     i = 0
     for df in df_list:
         # удаляем "NaN"
-        df = df.dropna()
+        df = df.dropna(subset=['Период, месяц'])
         # преобразуем столбцы
+        df['Головное предприятие']=df['Головное предприятие'].fillna(df['Клиент'])
         df['Количество'] = df['Количество'].apply(convert_currency)
         df['Выручка'] = df['Выручка'].apply(convert_currency)
-        df_List_ID[i] = df
+        df_list[i]=df
+        #df_List_ID[i] = df
         i = i + 1
 # преобразование входных Df
 df_convert_currency(df_List_ID)
@@ -79,8 +83,11 @@ rename_df(df_List_ID)
 
 df_sales_wout_VAT = df_List_ID[0].copy()
 df_sales_incl_VAT = df_List_ID[1].copy()
+#print(df_sales_incl_VAT.head())
+#print(df_sales_wout_VAT.info())
 
 """ for row in df_sales_incl_VAT.itertuples(index=False):
     for value in row:
         print(value)
         print(value.find('Ноябрь')) """
+        

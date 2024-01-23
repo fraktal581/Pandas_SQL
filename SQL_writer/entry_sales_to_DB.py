@@ -31,15 +31,43 @@ cursor.execute("""
                )
 """)
 
-# Вставка данных в таблицу
-for row in df_sales_wout_VAT.itertuples(index=False):
+# функция проверки данных в DB
+def record_exist(connection, tuple):
     cursor.execute("""
+                        SELECT EXISTS(
+                            SELECT * FROM Sales_without_VAT
+                             WHERE realisation = %s AND
+                                vendor = %s AND
+                                date_period = %s AND
+                                count = %s AND
+                                billings = %s)""", (tuple[3], tuple[8], tuple[9], tuple[10], tuple[11]))
+    result = cursor.fetchall()[0][0]
+    return result
+
+# Вставка данных в таблицу
+count_block = 0     # счетчик заблокированных данных
+count_add = 0       # счетчик добавленных данных
+for row in df_sales_wout_VAT.itertuples(index=False):
+    if record_exist(connection_BD, row):
+        count_block +=1
+    else:
+        cursor.execute("""
                 INSERT INTO Sales_without_VAT(segment, access_group, main_meneger, realisation, client_name, main_organisation, type_of_nomenclature, nomenclature, vendor, date_period, count, billings) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                 """, (
                     (row)
                     )
                 )
+        count_add +=1
+print(f'Добавлено {count_add} записей(си)\nЗаблокировано {count_block} записей(си)')
 
+
+#for row in df_sales_wout_VAT.itertuples(index=False):
+#    cursor.execute("""
+#                INSERT INTO Sales_without_VAT(segment, access_group, main_meneger, realisation, client_name, main_organisation, type_of_nomenclature, nomenclature, vendor, date_period, count, billings) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+#                """, (
+#                    (row)
+#                    )
+#                )
 
 # Фиксация изменений в БД
 connection_BD.commit()
