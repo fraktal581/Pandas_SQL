@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "SQL_writer"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
