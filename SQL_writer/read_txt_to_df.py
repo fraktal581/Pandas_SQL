@@ -8,9 +8,9 @@ import datetime
 
 # блок инициализации DateFrame, первичная агрегация и очистка
 
-df_1C_sales_include_VAT = pd.read_csv('C:/Users/vorotintsev/Desktop/Проекты PYTHON/Input_data/Sales_Include_VAT.csv', header=0, sep='\t', on_bad_lines="skip",
+df_1C_sales_include_VAT = pd.read_csv('C:/Users/vorotintsev/Desktop/projects PYTHON/Input_data/Sales_Include_VAT.csv', header=0, sep='\t', on_bad_lines="skip",
                                         engine='python')
-df_1C_sales_without_VAT = pd.read_csv('C:/Users/vorotintsev/Desktop/Проекты PYTHON/Input_data/Sales_WIthout_VAT.csv', header=0, sep='\t', on_bad_lines="skip",
+df_1C_sales_without_VAT = pd.read_csv('C:/Users/vorotintsev/Desktop/projects PYTHON/Input_data/Sales_WIthout_VAT.csv', header=0, sep='\t', on_bad_lines="skip",
                                         engine='python')
 df_List_ID = [df_1C_sales_without_VAT, df_1C_sales_include_VAT]
 
@@ -40,6 +40,13 @@ def convert_currency(val):
     else:
         return val
 
+# Ф-я замены амперсанта
+def replace_symbol(val):
+    if val.find("'"):
+        new_val = val.replace("'", "") 
+        return new_val
+    else:
+        return val
 # Ф-я преобразования строки с датой в дату
 def convert_date(date_string):
     # Разделяем строку на  месяц, год
@@ -96,10 +103,11 @@ def df_convert_currency(df_list):
         df['Количество'] = df['Количество'].apply(convert_currency)
         df['Выручка'] = df['Выручка'].apply(convert_currency)
         df[['Выручка', 'Количество']] = df[['Выручка', 'Количество']].fillna(0)
+        df['Понижающий коэф (Общие)'] = df['Понижающий коэф (Общие)'].fillna('Нет')
         df['График оплаты'] = df['График оплаты'].fillna('')
         df['График оплаты'] = df['График оплаты'].apply(slice_str)
         df['Период, месяц'] = df['Период, месяц'].apply(convert_date)
-        
+        df['Номенклатура'] = df['Номенклатура'].apply(replace_symbol)
         df_list[i]=df
         #df_List_ID[i] = df
         i = i + 1
@@ -138,6 +146,6 @@ df_sales_incl_VAT = df_List_ID[1].copy()
 #with open('SQL_writer/DATA/sales_wout_VAT.json', 'w') as file:
 #    file.write(json_sales_wout_VAT)
     
-#print(df_sales_incl_VAT.head())
+print(df_sales_incl_VAT.head())
 #print(df_sales_wout_VAT.info())
-print(len(df_sales_wout_VAT))
+#print(len(df_sales_wout_VAT))
