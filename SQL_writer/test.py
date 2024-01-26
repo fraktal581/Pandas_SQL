@@ -1,13 +1,5 @@
 import datetime
 
-str = "12 Предоплата"
-ind = str.find(' ')
-if ind < 0:
-    print(str)
-else:
-    print(str[:ind])
-
-
 """ 
 def convert_date(date_string):
     # Разделяем строку на  месяц, год
